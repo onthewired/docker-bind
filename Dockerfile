@@ -1,21 +1,20 @@
-FROM sameersbn/ubuntu:14.04.20170608
-MAINTAINER sameer@damagehead.com
+FROM fedora
+MAINTAINER onthewired@mmoplayer.fr
 
 ENV BIND_USER=bind \
     BIND_VERSION=1:9.9.5 \
-    WEBMIN_VERSION=1.8 \
+    WEBMIN_VERSION=1.850 \
     DATA_DIR=/data
 
-RUN rm -rf /etc/apt/apt.conf.d/docker-gzip-indexes \
- && wget http://www.webmin.com/jcameron-key.asc -qO - | apt-key add - \
- && echo "deb http://download.webmin.com/download/repository sarge contrib" >> /etc/apt/sources.list \
- && apt-get update \
- && DEBIAN_FRONTEND=noninteractive apt-get install -y bind9=${BIND_VERSION}* bind9-host=${BIND_VERSION}* webmin=${WEBMIN_VERSION}* dnsutils \
- && rm -rf /var/lib/apt/lists/*
+RUN dnf -y update && dnf clean all
+RUN dnf -y install bind-utils bind webmin && dnf clean all	
+RUN rndc-confgen -a -c /etc/rndc.key
+RUN chown named:named /etc/rndc.key
 
 COPY entrypoint.sh /sbin/entrypoint.sh
 RUN chmod 755 /sbin/entrypoint.sh
 
 EXPOSE 53/udp 53/tcp 10000/tcp
 ENTRYPOINT ["/sbin/entrypoint.sh"]
-CMD ["/usr/sbin/named"]
+CMD /usr/sbin/named -u named -f
+
