@@ -7,7 +7,7 @@ ENV BIND_USER=bind \
     DATA_DIR=/data
 
 RUN dnf -y update && dnf clean all
-RUN dnf -y install bind-utils bind wget perl openssl && dnf clean all	
+RUN dnf -y install bind-utils bind wget perl openssl perl-Net-SSLeay perl-Time-Local perl-Encode-Detect && dnf clean all	
 RUN cd /tmp && wget http://www.webmin.com/download/rpm/webmin-current.rpm && rpm -i /tmp/webmin-current.rpm
 RUN rndc-confgen -a -c /etc/rndc.key
 RUN chown named:named /etc/rndc.key
