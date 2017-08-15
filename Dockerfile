@@ -7,7 +7,7 @@ ENV BIND_USER=bind \
     DATA_DIR=/data
 
 RUN dnf -y update && dnf clean all
-RUN dnf -y install bind-utils bind && dnf clean all	
+RUN dnf -y install bind-utils bind wget && dnf clean all	
 RUN cd /tmp && wget http://www.webmin.com/download/rpm/webmin-current.rpm && rpm -i /tmp/webmin-current.rpm
 RUN rndc-confgen -a -c /etc/rndc.key
 RUN chown named:named /etc/rndc.key
